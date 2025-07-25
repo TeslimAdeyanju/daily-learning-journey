@@ -1,0 +1,52 @@
+name: Daily Learning Contribution - Simple Test
+
+on:
+  workflow_dispatch:
+
+jobs:
+  daily-learning:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: Test basic functionality
+        run: |
+          echo "Testing workflow..."
+          DATE=$(date +%Y-%m-%d)
+          TIME=$(date +%H:%M)
+          echo "Current date: $DATE"
+          echo "Current time: $TIME"
+          
+          # Create logs directory
+          echo "Creating logs directory..."
+          mkdir -p logs
+          ls -la
+          
+          # Test writing to log file
+          echo "Creating test log file..."
+          echo "# Test Log - $DATE" > logs/test-$DATE.md
+          echo "Test content at $TIME" >> logs/test-$DATE.md
+          
+          # Verify file was created
+          echo "Checking created files..."
+          ls -la logs/
+          cat logs/test-$DATE.md
+          
+          # Test README update
+          echo "Updating README..."
+          echo "# Test README Update" > README.md
+          echo "Last updated: $DATE at $TIME" >> README.md
+          
+          echo "All tests completed successfully!"
+
+      - name: Commit and push changes
+        run: |
+          git config --local user.email "teslim@adeyanjuteslim.co.uk"
+          git config --local user.name "Teslim Adeyanju"
+          git add .
+          git status
+          git commit -m "🧪 Test workflow - $(date +%Y-%m-%d)" || echo "No changes to commit"
+          git push
