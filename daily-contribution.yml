@@ -20,21 +20,19 @@ jobs:
         
       - name: Generate learning content
         run: |
+          echo "Starting daily learning workflow..."
+          
           # Create logs directory first
           mkdir -p logs
           
-          # Create or append to daily log
+          # Set up variables
           DATE=$(date +%Y-%m-%d)
           TIME=$(date +%H:%M)
           DAY=$(date +%A)
           
-          # Create learning log entry
-          echo "# Daily Learning Log - $DATE" > "logs/$DATE.md"
-          echo "" >> "logs/$DATE.md"
-          echo "## 📅 $DAY Learning Session - $TIME UTC" >> "logs/$DATE.md"
-          echo "" >> "logs/$DATE.md"
+          echo "Date: $DATE, Time: $TIME, Day: $DAY"
           
-          # Random learning activities to make it look natural
+          # Define learning activities
           ACTIVITIES=(
             "Reviewed Python data structures and algorithms"
             "Practiced SQL query optimization techniques"
@@ -52,6 +50,13 @@ jobs:
           ACTIVITY1=${ACTIVITIES[$RANDOM % ${#ACTIVITIES[@]}]}
           ACTIVITY2=${ACTIVITIES[$RANDOM % ${#ACTIVITIES[@]}]}
           
+          echo "Selected activities: $ACTIVITY1, $ACTIVITY2"
+          
+          # Create learning log entry
+          echo "# Daily Learning Log - $DATE" > "logs/$DATE.md"
+          echo "" >> "logs/$DATE.md"
+          echo "## 📅 $DAY Learning Session - $TIME UTC" >> "logs/$DATE.md"
+          echo "" >> "logs/$DATE.md"
           echo "### 🎯 Today's Focus:" >> "logs/$DATE.md"
           echo "- $ACTIVITY1" >> "logs/$DATE.md"
           echo "- $ACTIVITY2" >> "logs/$DATE.md"
@@ -65,7 +70,7 @@ jobs:
           echo "---" >> "logs/$DATE.md"
           echo "*Generated at $TIME UTC on $DATE*" >> "logs/$DATE.md"
           
-          # Update main README with latest activity
+          # Update main README
           echo "# 📚 Daily Learning Journey" > README.md
           echo "" >> README.md
           echo "🎯 **Mission**: Building consistent learning habits and tracking my professional development journey." >> README.md
@@ -86,6 +91,8 @@ jobs:
           echo "" >> README.md
           echo "---" >> README.md
           echo "*🤖 This repository automatically tracks my daily learning activities*" >> README.md
+          
+          echo "Content generation completed successfully!"
 
       - name: Commit and push changes
         run: |
@@ -93,7 +100,7 @@ jobs:
           git config --local user.name "Teslim Adeyanju"
           git add .
           
-          # Create meaningful commit messages
+          # Create meaningful commit messages based on time
           HOUR=$(date +%H)
           if [ $HOUR -lt 12 ]; then
             MESSAGE="🌅 Morning learning session - $(date +%Y-%m-%d)"
@@ -103,5 +110,8 @@ jobs:
             MESSAGE="🌙 Evening learning review - $(date +%Y-%m-%d)"
           fi
           
+          echo "Committing with message: $MESSAGE"
           git commit -m "$MESSAGE" || echo "No changes to commit"
           git push
+          
+          echo "Workflow completed successfully!"
