@@ -9,8 +9,8 @@
 ### 🔥 Current Learning Streak: Building daily habits!
 
 ### 📝 Latest Learning Session:
-- Practiced Excel VBA automation techniques
 - Reviewed Power BI dashboard design principles
+- Studied financial modeling best practices
 
 ## 🗂️ Learning Logs
 
