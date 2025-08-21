@@ -9,8 +9,8 @@
 ### 🔥 Current Learning Streak: Building daily habits!
 
 ### 📝 Latest Learning Session:
-- Studied financial modeling best practices
-- Explored machine learning concepts and applications
+- Practiced SQL query optimization techniques
+- Practiced Excel VBA automation techniques
 
 ## 🗂️ Learning Logs
 
