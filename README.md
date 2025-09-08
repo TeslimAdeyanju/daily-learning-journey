@@ -10,7 +10,7 @@
 
 ### 📝 Latest Learning Session:
 - Explored machine learning concepts and applications
-- Reviewed Power BI dashboard design principles
+- Reviewed statistical analysis methods
 
 ## 🗂️ Learning Logs
 
