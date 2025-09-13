@@ -10,7 +10,7 @@
 
 ### 📝 Latest Learning Session:
 - Studied financial modeling best practices
-- Explored data visualization best practices
+- Reviewed statistical analysis methods
 
 ## 🗂️ Learning Logs
 
