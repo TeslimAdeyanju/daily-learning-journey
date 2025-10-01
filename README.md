@@ -9,8 +9,8 @@
 ### 🔥 Current Learning Streak: Building daily habits!
 
 ### 📝 Latest Learning Session:
-- Studied cloud computing architecture patterns
-- Studied financial modeling best practices
+- Practiced coding interview problems
+- Explored machine learning concepts and applications
 
 ## 🗂️ Learning Logs
 
