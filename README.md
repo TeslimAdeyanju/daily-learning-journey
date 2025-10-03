@@ -9,8 +9,8 @@
 ### 🔥 Current Learning Streak: Building daily habits!
 
 ### 📝 Latest Learning Session:
-- Explored data visualization best practices
-- Explored data visualization best practices
+- Reviewed statistical analysis methods
+- Reviewed statistical analysis methods
 
 ## 🗂️ Learning Logs
 
