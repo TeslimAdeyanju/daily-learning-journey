@@ -9,8 +9,8 @@
 ### 🔥 Current Learning Streak: Building daily habits!
 
 ### 📝 Latest Learning Session:
-- Studied cloud computing architecture patterns
-- Reviewed Python data structures and algorithms
+- Explored machine learning concepts and applications
+- Explored data visualization best practices
 
 ## 🗂️ Learning Logs
 
