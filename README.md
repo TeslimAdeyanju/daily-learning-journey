@@ -10,7 +10,7 @@
 
 ### 📝 Latest Learning Session:
 - Reviewed Power BI dashboard design principles
-- Practiced Excel VBA automation techniques
+- Practiced SQL query optimization techniques
 
 ## 🗂️ Learning Logs
 
