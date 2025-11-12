@@ -9,8 +9,8 @@
 ### 🔥 Current Learning Streak: Building daily habits!
 
 ### 📝 Latest Learning Session:
+- Explored data visualization best practices
 - Reviewed Power BI dashboard design principles
-- Reviewed statistical analysis methods
 
 ## 🗂️ Learning Logs
 
