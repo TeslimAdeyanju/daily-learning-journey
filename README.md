@@ -9,8 +9,8 @@
 ### 🔥 Current Learning Streak: Building daily habits!
 
 ### 📝 Latest Learning Session:
-- Practiced coding interview problems
-- Practiced Excel VBA automation techniques
+- Practiced SQL query optimization techniques
+- Explored machine learning concepts and applications
 
 ## 🗂️ Learning Logs
 
