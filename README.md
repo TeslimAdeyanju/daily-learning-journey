@@ -9,8 +9,8 @@
 ### 🔥 Current Learning Streak: Building daily habits!
 
 ### 📝 Latest Learning Session:
-- Practiced coding interview problems
 - Studied financial modeling best practices
+- Practiced SQL query optimization techniques
 
 ## 🗂️ Learning Logs
 
