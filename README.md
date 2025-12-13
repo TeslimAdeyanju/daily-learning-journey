@@ -10,7 +10,7 @@
 
 ### 📝 Latest Learning Session:
 - Studied cloud computing architecture patterns
-- Practiced coding interview problems
+- Practiced SQL query optimization techniques
 
 ## 🗂️ Learning Logs
 
