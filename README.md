@@ -10,7 +10,7 @@
 
 ### 📝 Latest Learning Session:
 - Reviewed statistical analysis methods
-- Reviewed Power BI dashboard design principles
+- Studied financial modeling best practices
 
 ## 🗂️ Learning Logs
 
