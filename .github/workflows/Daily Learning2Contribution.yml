@@ -126,6 +126,22 @@ jobs:
           
           echo "Committing with message: $MESSAGE"
           
+          # Function to handle rebase conflicts in auto-generated files
+          resolve_rebase_conflicts() {
+            echo "Attempting to resolve conflicts in auto-generated files..."
+            git checkout --ours README.md 2>/dev/null || true
+            git add README.md 2>/dev/null || true
+            # Safely handle log files using find to avoid wildcard expansion issues
+            find logs -name '*.md' -type f -exec git checkout --ours {} \; 2>/dev/null || true
+            find logs -name '*.md' -type f -exec git add {} \; 2>/dev/null || true
+            git rebase --continue || {
+              echo "Could not auto-resolve conflicts"
+              git rebase --abort
+              return 1
+            }
+            return 0
+          }
+          
           # Check if there are changes to commit
           if git diff --staged --quiet; then
             echo "No changes to commit"
@@ -137,20 +153,10 @@ jobs:
             echo "Pulling latest changes..."
             git pull --rebase origin main || {
               echo "Rebase failed, attempting to resolve..."
-              # If rebase fails, it's likely due to conflicts in generated files
-              # Accept our changes for these auto-generated files
-              git checkout --ours README.md 2>/dev/null || true
-              git add README.md 2>/dev/null || true
-              # Handle logs directory files if they exist
-              if ls logs/*.md 1>/dev/null 2>&1; then
-                git checkout --ours logs/*.md 2>/dev/null || true
-                git add logs/*.md 2>/dev/null || true
-              fi
-              git rebase --continue || {
-                echo "Could not auto-resolve, aborting rebase"
-                git rebase --abort
+              if ! resolve_rebase_conflicts; then
+                echo "Failed to resolve rebase conflicts"
                 exit 1
-              }
+              fi
             }
             
             # Push with retry logic
@@ -168,17 +174,10 @@ jobs:
                   # Pull and rebase again before retry
                   git pull --rebase origin main || {
                     echo "Rebase during retry failed, attempting to resolve..."
-                    git checkout --ours README.md 2>/dev/null || true
-                    git add README.md 2>/dev/null || true
-                    if ls logs/*.md 1>/dev/null 2>&1; then
-                      git checkout --ours logs/*.md 2>/dev/null || true
-                      git add logs/*.md 2>/dev/null || true
-                    fi
-                    git rebase --continue || {
-                      echo "Retry rebase failed, aborting"
-                      git rebase --abort
+                    if ! resolve_rebase_conflicts; then
+                      echo "Failed to resolve rebase conflicts during retry"
                       exit 1
-                    }
+                    fi
                   }
                 else
                   echo "Failed to push after $MAX_RETRIES attempts"
