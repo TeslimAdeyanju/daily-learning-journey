@@ -139,8 +139,13 @@ jobs:
               echo "Rebase failed, attempting to resolve..."
               # If rebase fails, it's likely due to conflicts in generated files
               # Accept our changes for these auto-generated files
-              git checkout --ours README.md logs/*.md 2>/dev/null || true
-              git add README.md logs/*.md 2>/dev/null || true
+              git checkout --ours README.md 2>/dev/null || true
+              git add README.md 2>/dev/null || true
+              # Handle logs directory files if they exist
+              if ls logs/*.md 1>/dev/null 2>&1; then
+                git checkout --ours logs/*.md 2>/dev/null || true
+                git add logs/*.md 2>/dev/null || true
+              fi
               git rebase --continue || {
                 echo "Could not auto-resolve, aborting rebase"
                 git rebase --abort
@@ -160,7 +165,21 @@ jobs:
                 if [ $RETRY_COUNT -lt $MAX_RETRIES ]; then
                   echo "Push failed, retrying ($RETRY_COUNT/$MAX_RETRIES)..."
                   sleep 2
-                  git pull --rebase origin main
+                  # Pull and rebase again before retry
+                  git pull --rebase origin main || {
+                    echo "Rebase during retry failed, attempting to resolve..."
+                    git checkout --ours README.md 2>/dev/null || true
+                    git add README.md 2>/dev/null || true
+                    if ls logs/*.md 1>/dev/null 2>&1; then
+                      git checkout --ours logs/*.md 2>/dev/null || true
+                      git add logs/*.md 2>/dev/null || true
+                    fi
+                    git rebase --continue || {
+                      echo "Retry rebase failed, aborting"
+                      git rebase --abort
+                      exit 1
+                    }
+                  }
                 else
                   echo "Failed to push after $MAX_RETRIES attempts"
                   exit 1
