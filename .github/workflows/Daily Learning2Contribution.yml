@@ -1,3 +1,17 @@
+# Daily Learning Contribution Workflow
+# 
+# This workflow automatically generates daily learning logs and updates the repository
+# to maintain a consistent contribution history. It runs on a schedule 4 times per day.
+#
+# IMPORTANT: This workflow handles concurrent runs gracefully by:
+# - Checking for changes before committing
+# - Pulling and rebasing before pushing to avoid conflicts
+# - Retrying push operations if they fail due to concurrent updates
+# - Auto-resolving conflicts in generated files (README.md and logs/*.md)
+#
+# This prevents the "rejected - fetch first" error that occurs when multiple
+# scheduled workflow runs execute close together.
+
 name: Daily Learning Contribution
 
 on:
@@ -111,7 +125,48 @@ jobs:
           fi
           
           echo "Committing with message: $MESSAGE"
-          git commit -m "$MESSAGE" || echo "No changes to commit"
-          git push
+          
+          # Check if there are changes to commit
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "$MESSAGE"
+            
+            # Pull and rebase before pushing to handle concurrent workflow runs
+            # This prevents push rejection errors when multiple workflows run simultaneously
+            echo "Pulling latest changes..."
+            git pull --rebase origin main || {
+              echo "Rebase failed, attempting to resolve..."
+              # If rebase fails, it's likely due to conflicts in generated files
+              # Accept our changes for these auto-generated files
+              git checkout --ours README.md logs/*.md 2>/dev/null || true
+              git add README.md logs/*.md 2>/dev/null || true
+              git rebase --continue || {
+                echo "Could not auto-resolve, aborting rebase"
+                git rebase --abort
+                exit 1
+              }
+            }
+            
+            # Push with retry logic
+            MAX_RETRIES=3
+            RETRY_COUNT=0
+            while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
+              if git push; then
+                echo "Successfully pushed changes!"
+                break
+              else
+                RETRY_COUNT=$((RETRY_COUNT + 1))
+                if [ $RETRY_COUNT -lt $MAX_RETRIES ]; then
+                  echo "Push failed, retrying ($RETRY_COUNT/$MAX_RETRIES)..."
+                  sleep 2
+                  git pull --rebase origin main
+                else
+                  echo "Failed to push after $MAX_RETRIES attempts"
+                  exit 1
+                fi
+              fi
+            done
+          fi
           
           echo "Workflow completed successfully!"
