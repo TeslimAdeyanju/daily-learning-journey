@@ -9,8 +9,8 @@
 ### 🔥 Current Learning Streak: Building daily habits!
 
 ### 📝 Latest Learning Session:
-- Practiced SQL query optimization techniques
-- Explored machine learning concepts and applications
+- Explored data visualization best practices
+- Reviewed statistical analysis methods
 
 ## 🗂️ Learning Logs
 
