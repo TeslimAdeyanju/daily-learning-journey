@@ -10,7 +10,7 @@
 
 ### 📝 Latest Learning Session:
 - Reviewed Python data structures and algorithms
-- Explored data visualization best practices
+- Studied financial modeling best practices
 
 ## 🗂️ Learning Logs
 
