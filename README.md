@@ -9,8 +9,8 @@
 ### 🔥 Current Learning Streak: Building daily habits!
 
 ### 📝 Latest Learning Session:
+- Explored data visualization best practices
 - Reviewed statistical analysis methods
-- Practiced coding interview problems
 
 ## 🗂️ Learning Logs
 
