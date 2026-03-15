@@ -9,8 +9,8 @@
 ### 🔥 Current Learning Streak: Building daily habits!
 
 ### 📝 Latest Learning Session:
-- Practiced coding interview problems
-- Practiced coding interview problems
+- Practiced SQL query optimization techniques
+- Studied cloud computing architecture patterns
 
 ## 🗂️ Learning Logs
 
