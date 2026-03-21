@@ -9,6 +9,10 @@ on:
     - cron: "0 21 * * *"   # 9:00 PM UTC (Night practice)
   workflow_dispatch:
 
+concurrency:
+  group: daily-learning-journey-main
+  cancel-in-progress: false
+
 jobs:
   daily-learning:
     runs-on: ubuntu-latest
