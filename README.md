@@ -9,8 +9,8 @@
 ### 🔥 Current Learning Streak: Building daily habits!
 
 ### 📝 Latest Learning Session:
-- Studied financial modeling best practices
-- Reviewed Python data structures and algorithms
+- Explored machine learning concepts and applications
+- Reviewed Power BI dashboard design principles
 
 ## 🗂️ Learning Logs
 
