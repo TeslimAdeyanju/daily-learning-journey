@@ -9,8 +9,8 @@
 ### 🔥 Current Learning Streak: Building daily habits!
 
 ### 📝 Latest Learning Session:
-- Reviewed Power BI dashboard design principles
-- Studied cloud computing architecture patterns
+- Practiced coding interview problems
+- Practiced Excel VBA automation techniques
 
 ## 🗂️ Learning Logs
 
