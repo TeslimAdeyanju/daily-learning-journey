@@ -9,8 +9,8 @@
 ### 🔥 Current Learning Streak: Building daily habits!
 
 ### 📝 Latest Learning Session:
-- Practiced coding interview problems
-- Reviewed statistical analysis methods
+- Practiced SQL query optimization techniques
+- Explored machine learning concepts and applications
 
 ## 🗂️ Learning Logs
 
