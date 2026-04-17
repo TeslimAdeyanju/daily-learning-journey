@@ -9,8 +9,8 @@
 ### 🔥 Current Learning Streak: Building daily habits!
 
 ### 📝 Latest Learning Session:
-- Practiced coding interview problems
-- Explored machine learning concepts and applications
+- Reviewed Python data structures and algorithms
+- Reviewed statistical analysis methods
 
 ## 🗂️ Learning Logs
 
