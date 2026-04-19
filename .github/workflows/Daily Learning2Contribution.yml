@@ -1,3 +1,17 @@
+# Daily Learning Contribution Workflow
+# 
+# This workflow automatically generates daily learning logs and updates the repository
+# to maintain a consistent contribution history. It runs on a schedule 4 times per day.
+#
+# IMPORTANT: This workflow handles concurrent runs gracefully by:
+# - Checking for changes before committing
+# - Pulling and rebasing before pushing to avoid conflicts
+# - Retrying push operations if they fail due to concurrent updates
+# - Auto-resolving conflicts in generated files (README.md and logs/*.md)
+#
+# This prevents the "rejected - fetch first" error that occurs when multiple
+# scheduled workflow runs execute close together.
+
 name: Daily Learning Contribution
 
 on:
@@ -111,7 +125,66 @@ jobs:
           fi
           
           echo "Committing with message: $MESSAGE"
-          git commit -m "$MESSAGE" || echo "No changes to commit"
-          git push
+          
+          # Function to handle rebase conflicts in auto-generated files
+          resolve_rebase_conflicts() {
+            echo "Attempting to resolve conflicts in auto-generated files..."
+            git checkout --ours README.md 2>/dev/null || true
+            git add README.md 2>/dev/null || true
+            # Safely handle log files using find to avoid wildcard expansion issues
+            find logs -name '*.md' -type f -exec git checkout --ours {} \; 2>/dev/null || true
+            find logs -name '*.md' -type f -exec git add {} \; 2>/dev/null || true
+            git rebase --continue || {
+              echo "Could not auto-resolve conflicts"
+              git rebase --abort
+              return 1
+            }
+            return 0
+          }
+          
+          # Check if there are changes to commit
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "$MESSAGE"
+            
+            # Pull and rebase before pushing to handle concurrent workflow runs
+            # This prevents push rejection errors when multiple workflows run simultaneously
+            echo "Pulling latest changes..."
+            git pull --rebase origin main || {
+              echo "Rebase failed, attempting to resolve..."
+              if ! resolve_rebase_conflicts; then
+                echo "Failed to resolve rebase conflicts"
+                exit 1
+              fi
+            }
+            
+            # Push with retry logic
+            MAX_RETRIES=3
+            RETRY_COUNT=0
+            while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
+              if git push; then
+                echo "Successfully pushed changes!"
+                break
+              else
+                RETRY_COUNT=$((RETRY_COUNT + 1))
+                if [ $RETRY_COUNT -lt $MAX_RETRIES ]; then
+                  echo "Push failed, retrying ($RETRY_COUNT/$MAX_RETRIES)..."
+                  sleep 2
+                  # Pull and rebase again before retry
+                  git pull --rebase origin main || {
+                    echo "Rebase during retry failed, attempting to resolve..."
+                    if ! resolve_rebase_conflicts; then
+                      echo "Failed to resolve rebase conflicts during retry"
+                      exit 1
+                    fi
+                  }
+                else
+                  echo "Failed to push after $MAX_RETRIES attempts"
+                  exit 1
+                fi
+              fi
+            done
+          fi
           
           echo "Workflow completed successfully!"
