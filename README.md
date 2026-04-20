@@ -9,8 +9,8 @@
 ### 🔥 Current Learning Streak: Building daily habits!
 
 ### 📝 Latest Learning Session:
+- Explored machine learning concepts and applications
 - Practiced coding interview problems
-- Studied financial modeling best practices
 
 ## 🗂️ Learning Logs
 
