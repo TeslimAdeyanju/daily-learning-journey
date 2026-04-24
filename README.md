@@ -9,8 +9,8 @@
 ### 🔥 Current Learning Streak: Building daily habits!
 
 ### 📝 Latest Learning Session:
-- Studied cloud computing architecture patterns
-- Reviewed Power BI dashboard design principles
+- Studied financial modeling best practices
+- Practiced SQL query optimization techniques
 
 ## 🗂️ Learning Logs
 
