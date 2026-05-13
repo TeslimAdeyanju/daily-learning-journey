@@ -9,8 +9,8 @@
 ### 🔥 Current Learning Streak: Building daily habits!
 
 ### 📝 Latest Learning Session:
-- Explored machine learning concepts and applications
-- Practiced Excel VBA automation techniques
+- Explored data visualization best practices
+- Explored data visualization best practices
 
 ## 🗂️ Learning Logs
 
