@@ -10,7 +10,7 @@
 
 ### 📝 Latest Learning Session:
 - Reviewed Power BI dashboard design principles
-- Reviewed Python data structures and algorithms
+- Explored data visualization best practices
 
 ## 🗂️ Learning Logs
 
