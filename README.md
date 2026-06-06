@@ -9,8 +9,8 @@
 ### 🔥 Current Learning Streak: Building daily habits!
 
 ### 📝 Latest Learning Session:
-- Studied cloud computing architecture patterns
-- Practiced Excel VBA automation techniques
+- Studied financial modeling best practices
+- Explored data visualization best practices
 
 ## 🗂️ Learning Logs
 
