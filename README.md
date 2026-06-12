@@ -4,13 +4,13 @@
 
 ## 📊 Recent Learning Activity
 
-**Last Updated**: 2026-06-12 at 09:50 UTC
+**Last Updated**: 2026-06-12 at 14:01 UTC
 
 ### 🔥 Current Learning Streak: Building daily habits!
 
 ### 📝 Latest Learning Session:
-- Reviewed Power BI dashboard design principles
-- Explored machine learning concepts and applications
+- Practiced SQL query optimization techniques
+- Practiced coding interview problems
 
 ## 🗂️ Learning Logs
 
