@@ -10,7 +10,7 @@
 
 ### 📝 Latest Learning Session:
 - Explored data visualization best practices
-- Reviewed Python data structures and algorithms
+- Reviewed statistical analysis methods
 
 ## 🗂️ Learning Logs
 
