@@ -2,11 +2,10 @@ name: Daily Learning Contribution
 
 on:
   schedule:
-    # Multiple commits throughout the day to look natural
-    - cron: "30 8 * * *"   # 8:30 AM UTC (Morning learning)
-    - cron: "0 13 * * *"   # 1:00 PM UTC (Lunch break learning)
-    - cron: "30 17 * * *"  # 5:30 PM UTC (Evening review)
-    - cron: "0 21 * * *"   # 9:00 PM UTC (Night practice)
+    - cron: "30 8 * * *"   # 8:30 AM UTC (Morning check-in)
+    - cron: "0 13 * * *"   # 1:00 PM UTC (Lunch check-in)
+    - cron: "30 17 * * *"  # 5:30 PM UTC (Evening check-in)
+    - cron: "0 21 * * *"   # 9:00 PM UTC (Night check-in + email summary)
   workflow_dispatch:
 
 jobs:
@@ -17,100 +16,88 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        
-      - name: Generate learning content
+
+      - name: Fetch real GitHub activity and generate log
+        env:
+          GH_PAT: ${{ secrets.GH_PAT }}
+          GITHUB_USERNAME: TeslimAdeyanju
         run: |
-          echo "Starting daily learning workflow..."
-          
-          # Create logs directory first
           mkdir -p logs
-          
-          # Set up variables
+
           DATE=$(date +%Y-%m-%d)
           TIME=$(date +%H:%M)
           DAY=$(date +%A)
-          
-          echo "Date: $DATE, Time: $TIME, Day: $DAY"
-          
-          # Define learning activities
-          ACTIVITIES=(
-            "Reviewed Python data structures and algorithms"
-            "Practiced SQL query optimization techniques"
-            "Studied financial modeling best practices"
-            "Explored machine learning concepts and applications"
-            "Reviewed Power BI dashboard design principles"
-            "Practiced Excel VBA automation techniques"
-            "Studied cloud computing architecture patterns"
-            "Reviewed statistical analysis methods"
-            "Explored data visualization best practices"
-            "Practiced coding interview problems"
-          )
-          
-          # Pick random activities
-          ACTIVITY1=${ACTIVITIES[$RANDOM % ${#ACTIVITIES[@]}]}
-          ACTIVITY2=${ACTIVITIES[$RANDOM % ${#ACTIVITIES[@]}]}
-          
-          echo "Selected activities: $ACTIVITY1, $ACTIVITY2"
-          
-          # Create learning log entry
-          echo "# Daily Learning Log - $DATE" > "logs/$DATE.md"
-          echo "" >> "logs/$DATE.md"
-          echo "## 📅 $DAY Learning Session - $TIME UTC" >> "logs/$DATE.md"
-          echo "" >> "logs/$DATE.md"
-          echo "### 🎯 Today's Focus:" >> "logs/$DATE.md"
-          echo "- $ACTIVITY1" >> "logs/$DATE.md"
-          echo "- $ACTIVITY2" >> "logs/$DATE.md"
-          echo "- Maintained consistent learning momentum" >> "logs/$DATE.md"
-          echo "" >> "logs/$DATE.md"
-          echo "### 📈 Progress Notes:" >> "logs/$DATE.md"
-          echo "- Continuing professional development journey" >> "logs/$DATE.md"
-          echo "- Building strong technical foundation" >> "logs/$DATE.md"
-          echo "- Enhancing data analysis capabilities" >> "logs/$DATE.md"
-          echo "" >> "logs/$DATE.md"
-          echo "---" >> "logs/$DATE.md"
-          echo "*Generated at $TIME UTC on $DATE*" >> "logs/$DATE.md"
-          
-          # Update main README
-          echo "# 📚 Daily Learning Journey" > README.md
-          echo "" >> README.md
-          echo "🎯 **Mission**: Building consistent learning habits and tracking my professional development journey." >> README.md
-          echo "" >> README.md
-          echo "## 📊 Recent Learning Activity" >> README.md
-          echo "" >> README.md
-          echo "**Last Updated**: $DATE at $TIME UTC" >> README.md
-          echo "" >> README.md
-          echo "### 🔥 Current Learning Streak: Building daily habits!" >> README.md
-          echo "" >> README.md
-          echo "### 📝 Latest Learning Session:" >> README.md
-          echo "- $ACTIVITY1" >> README.md
-          echo "- $ACTIVITY2" >> README.md
-          echo "" >> README.md
-          echo "## 🗂️ Learning Logs" >> README.md
-          echo "" >> README.md
-          echo "All daily learning activities are documented in the [logs/](./logs/) folder." >> README.md
-          echo "" >> README.md
-          echo "---" >> README.md
-          echo "*🤖 This repository automatically tracks my daily learning activities*" >> README.md
-          
-          echo "Content generation completed successfully!"
+          SINCE="${DATE}T00:00:00Z"
+          THIS_REPO="${{ github.repository }}"
+
+          # Pull today's push events for the user, excluding this journey repo itself
+          curl -s -H "Authorization: token $GH_PAT" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/users/$GITHUB_USERNAME/events?per_page=100" \
+            | jq --arg since "$SINCE" --arg repo "$THIS_REPO" \
+              '[.[] | select(.type == "PushEvent") | select(.created_at >= $since) | select(.repo.name != $repo)]' \
+            > /tmp/push_events.json
+
+          COMMIT_COUNT=$(jq '[.[].payload.commits[]] | length' /tmp/push_events.json)
+          REPOS=$(jq -r '[.[].repo.name] | unique | join(", ")' /tmp/push_events.json)
+
+          {
+            echo "# Daily Learning Log - $DATE"
+            echo ""
+            echo "## 📅 $DAY Activity Summary - $TIME UTC"
+            echo ""
+            if [ "$COMMIT_COUNT" -gt 0 ]; then
+              echo "### 🎯 Real GitHub activity today:"
+              echo "- $COMMIT_COUNT commit(s) across: $REPOS"
+              echo ""
+              echo "### 📝 Commit messages:"
+              jq -r '.[].payload.commits[].message' /tmp/push_events.json | sed 's/^/- /'
+            else
+              echo "### 🎯 No commits recorded yet today."
+            fi
+            echo ""
+            echo "---"
+            echo "*Generated at $TIME UTC on $DATE*"
+          } > "logs/$DATE.md"
+
+          {
+            echo "# 📚 Daily Learning Journey"
+            echo ""
+            echo "🎯 **Mission**: Automatically tracking my real GitHub activity."
+            echo ""
+            echo "## 📊 Today's Activity ($DATE)"
+            echo ""
+            echo "**Last updated**: $DATE at $TIME UTC"
+            echo ""
+            if [ "$COMMIT_COUNT" -gt 0 ]; then
+              echo "### 🔥 $COMMIT_COUNT commit(s) today across: $REPOS"
+            else
+              echo "### No commits yet today."
+            fi
+            echo ""
+            echo "## 🗂️ Learning Logs"
+            echo ""
+            echo "All daily activity is documented in the [logs/](./logs/) folder."
+          } > README.md
+
+          echo "COMMIT_COUNT=$COMMIT_COUNT" >> "$GITHUB_ENV"
+          echo "REPOS=$REPOS" >> "$GITHUB_ENV"
 
       - name: Commit and push changes
         run: |
           git config --local user.email "teslim@adeyanjuteslim.co.uk"
           git config --local user.name "Teslim Adeyanju"
           git add .
-          
-          # Create meaningful commit messages based on time
+
           HOUR=$(date +%H)
           if [ $HOUR -lt 12 ]; then
-            MESSAGE="🌅 Morning learning session - $(date +%Y-%m-%d)"
+            MESSAGE="🌅 Morning activity check - $(date +%Y-%m-%d)"
           elif [ $HOUR -lt 17 ]; then
-            MESSAGE="☀️ Afternoon study session - $(date +%Y-%m-%d)"
+            MESSAGE="☀️ Afternoon activity check - $(date +%Y-%m-%d)"
           else
-            MESSAGE="🌙 Evening learning review - $(date +%Y-%m-%d)"
+            MESSAGE="🌙 Evening activity check - $(date +%Y-%m-%d)"
           fi
-          
-          echo "Committing with message: $MESSAGE"
+
           git commit -m "$MESSAGE" || echo "No changes to commit"
 
           # Retry push with rebase in case another run pushed in the meantime
@@ -121,4 +108,31 @@ jobs:
             sleep $((RANDOM % 5 + 1))
           done
 
-          echo "Workflow completed successfully!"
+      - name: Determine if this is the final run of the day
+        id: check_time
+        run: |
+          HOUR=$(date +%H)
+          if [ "$HOUR" -ge 20 ] || [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "should_email=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "should_email=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Send daily summary email
+        if: steps.check_time.outputs.should_email == 'true'
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          username: ${{ secrets.MAIL_USERNAME }}
+          password: ${{ secrets.MAIL_PASSWORD }}
+          subject: "Daily GitHub Activity Summary - ${{ env.COMMIT_COUNT }} commits"
+          to: adeyanjuteslim@gmail.com
+          from: Daily Learning Journey Bot
+          body: |
+            Today's real GitHub activity summary:
+
+            Commits: ${{ env.COMMIT_COUNT }}
+            Repos: ${{ env.REPOS }}
+
+            Full log: https://github.com/${{ github.repository }}

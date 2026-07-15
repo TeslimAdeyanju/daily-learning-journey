@@ -4,9 +4,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this repository is
 
-This is not an application codebase — it's a single GitHub Actions workflow that auto-generates
-commit activity. There is no build, lint, or test tooling because there is no source code to
-compile or execute locally; the only "logic" is the shell script embedded in the workflow YAML.
+This is not an application codebase — it's a single GitHub Actions workflow that records the
+owner's (TeslimAdeyanju) real daily GitHub commit activity and emails a daily summary. There is no
+build, lint, or test tooling because there is no source code to compile or execute locally; the
+only "logic" is the shell script embedded in the workflow YAML.
 
 ## Structure
 
@@ -25,16 +26,28 @@ compile or execute locally; the only "logic" is the shell script embedded in the
 On a cron schedule (four times daily, `.github/workflows/daily-contribution.yml:4-9`) or via manual
 `workflow_dispatch`, the job:
 
-1. Picks two random entries from a hardcoded `ACTIVITIES` list of learning topics.
-2. Writes `logs/<YYYY-MM-DD>.md` with a formatted entry combining those activities.
-3. Overwrites `README.md` in full with a summary pointing at the latest entry and the `logs/`
-   folder.
-4. Commits with a time-of-day-flavored message (morning/afternoon/evening emoji + date) and pushes
-   to the branch, using a git identity configured inline in the step (`git config --local`).
+1. Calls the GitHub Events API (`GET /users/TeslimAdeyanju/events`) using a PAT (`secrets.GH_PAT`,
+   not the default `GITHUB_TOKEN` — that's scoped only to this repo) to pull `PushEvent`s from
+   today, across all repos, excluding this journey repo itself.
+2. Tallies commit count and touched repo names with `jq`, and writes `logs/<YYYY-MM-DD>.md` plus a
+   full `README.md` rewrite reflecting that real activity (or "no commits yet today" if none).
+3. Commits with a time-of-day-flavored message and pushes, retrying with `git pull --rebase` on
+   rejection (up to 5 attempts) — this exists because a second, now-deleted, identically-scheduled
+   workflow used to race this one for the push. Keep the retry loop even without that duplicate;
+   it's cheap insurance against any future concurrent run (e.g. a manual `workflow_dispatch` firing
+   close to a scheduled one).
+4. Only on the last scheduled run of the day (`HOUR >= 20` UTC) or on manual `workflow_dispatch`,
+   emails a summary via `dawidd6/action-send-mail@v3` over Gmail SMTP, gated by the `check_time`
+   step's `should_email` output — this avoids sending 4 emails/day for the same rolling tally.
 
 Because both `README.md` and each day's log file are fully regenerated (not appended to) by string
 concatenation in bash, any manual edits to `README.md` or to a given day's log will be clobbered
 the next time the workflow runs.
+
+Required repo secrets (Settings → Secrets and variables → Actions):
+- `GH_PAT` — classic PAT with `repo` scope, used to read push events across private repos.
+- `MAIL_USERNAME` / `MAIL_PASSWORD` — Gmail address and a Gmail **App Password** (not the account
+  password; requires 2FA enabled on the account) used for SMTP.
 
 The push step retries with `git pull --rebase origin main` on rejection (up to 5 attempts with a
 random backoff) — this exists specifically because a second, now-deleted, identically-scheduled
