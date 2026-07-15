@@ -10,12 +10,11 @@ compile or execute locally; the only "logic" is the shell script embedded in the
 
 ## Structure
 
-- `.github/workflows/daily-contribution.yml` — the workflow GitHub Actions actually runs. This is
-  the file to edit.
-- `daily-contribution.yml` (repo root) — a stale duplicate of the workflow above, left over from
-  early iterations. GitHub only executes workflows under `.github/workflows/`, so this root copy
-  is inert. Keep both in sync if you intend to keep it, or remove it if it's just dead weight —
-  check with the user before deleting since it may be intentional history.
+- `.github/workflows/daily-contribution.yml` — the only workflow file; this is the one to edit.
+  (Two duplicate workflow files with the same cron schedule used to exist and raced each other on
+  every trigger, causing intermittent push failures — see note below. Both were removed; don't
+  recreate a second scheduled workflow that touches `README.md`/`logs/` without folding its logic
+  into this one file.)
 - `logs/` — created at runtime by the workflow (`mkdir -p logs`); not guaranteed to exist in a
   fresh checkout.
 - `README.md` — regenerated wholesale by the workflow on every run (see below). Do not hand-edit
@@ -36,6 +35,12 @@ On a cron schedule (four times daily, `.github/workflows/daily-contribution.yml:
 Because both `README.md` and each day's log file are fully regenerated (not appended to) by string
 concatenation in bash, any manual edits to `README.md` or to a given day's log will be clobbered
 the next time the workflow runs.
+
+The push step retries with `git pull --rebase origin main` on rejection (up to 5 attempts with a
+random backoff) — this exists specifically because a second, now-deleted, identically-scheduled
+workflow used to race this one for the push and fail non-fast-forward. Keep this retry loop even
+though the duplicate is gone; it's cheap insurance against any future concurrent run (e.g. a manual
+`workflow_dispatch` firing close to a scheduled one).
 
 ## Making changes
 
