@@ -112,6 +112,13 @@ jobs:
           
           echo "Committing with message: $MESSAGE"
           git commit -m "$MESSAGE" || echo "No changes to commit"
-          git push
-          
+
+          # Retry push with rebase in case another run pushed in the meantime
+          for i in 1 2 3 4 5; do
+            git push && break
+            echo "Push rejected, pulling and retrying ($i/5)..."
+            git pull --rebase origin main
+            sleep $((RANDOM % 5 + 1))
+          done
+
           echo "Workflow completed successfully!"
